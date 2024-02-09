@@ -1,0 +1,76 @@
+<html>
+<head><title>spinner</title></head>
+<body>
+<svg id="spinner" height="700" width="700" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"/>
+<script>
+var topics=["minecraft","math","art","linux","blender","arduino"]
+let N=topics.length;
+
+let a=0;
+let b=0;
+var svg=document.getElementById("spinner");
+for (let i=0;i<N;i++){
+	b=a+2*Math.PI/N;
+	let sectorElement=document.createElementNS("http://www.w3.org/2000/svg", "path");
+	sectorElement.setAttribute("d","M 50 50 "+(50+45*Math.cos(a))+" "+(50-45*Math.sin(a))+" A45 45 0 0 0 "+(50+45*Math.cos(b))+" "+(50-45*Math.sin(b))+" Z");
+	sectorElement.style.stroke="#000";
+	color=(1<<24)*Math.random()|0;
+	sectorElement.style.fill="#"+color.toString(16).padStart(6,"0")
+	sectorElement.style.strokeWidth="1px";
+	svg.appendChild(sectorElement);
+
+	textElement=document.createElementNS("http://www.w3.org/2000/svg","text");
+	textContent=document.createTextNode(topics[i]);
+	textElement.setAttribute("x",(50+35*Math.cos((a+b)/2)));
+	textElement.setAttribute("y",(50-35*Math.sin((a+b)/2)));
+	textElement.setAttribute("font-size",6);
+	textElement.setAttribute("fill","#"+(~color>>>0).toString(16).slice(-6).padStart(6,"0"));
+	textElement.setAttribute("text-anchor","middle");
+	textElement.setAttribute("transform","rotate("+(((-180/Math.PI)*(a+b)/2)+90)+","+(50+35*Math.cos((a+b)/2))+","+(50-35*Math.sin((a+b)/2))+")");
+	textElement.appendChild(textContent);
+	svg.appendChild(textElement);
+	a=b;
+}
+
+var arrow=document.createElementNS("http://www.w3.org/2000/svg", "path");
+arrow.setAttribute("d","M 30 55 L 30 45 L 70 45 L 70 40 L 80 50 L 70 60 L 70 55 Z" );
+arrow.style.stroke="#000";
+arrow.style.fill="#FF0"
+arrow.style.strokeWidth=".5px";
+svg.appendChild(arrow);
+
+let angle=270.0;
+
+setSpinnerAngle(angle);
+
+   function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+   }
+
+var circle=document.createElementNS("http://www.w3.org/2000/svg", "circle");
+circle.setAttribute("cx","50");
+circle.setAttribute("cy","50");
+circle.setAttribute("r","3");
+circle.setAttribute("onclick","spinSpinner()");
+circle.style.stroke="#000";
+circle.style.fill="#F00"
+circle.style.strokeWidth=".5px";
+svg.appendChild(circle);
+
+function setSpinnerAngle(a){
+	arrow.setAttribute("transform","rotate("+a+",50,50)");
+}
+
+async function spinSpinner(){
+	let goal_angle=Math.random()*20*360;
+	let delta=(goal_angle-angle)/100;
+	while (Math.abs(delta)>.05){
+		delta=(goal_angle-angle)/100;
+		angle+=delta;
+		setSpinnerAngle(angle);
+		await sleep(5);
+	}
+}
+</script>
+</body>
+</html>
